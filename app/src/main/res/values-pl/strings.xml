@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="username_hint">Nazwa użytkownika</string>
+    <string name="password_hint">Hasło</string>
+    <string name="login">Zaloguj</string>
+    <string name="add">Dodaj</string>
+    <string name="refresh">Odśwież</string>
+    <string name="logout">Wyloguj</string>
+    <string name="total_amount">Kwota całkowita:</string>
+    <string name="insecure_environment_error_title">Niebezpieczne środowisko</string>
+    <string name="insecure_environment_message">To koniec!\nPowód: %s</string>
+    <string name="username_cant_be_empty">Nazwa nie może być pusta!</string>
+    <string name="password_cant_be_empty">Hasło nie może być puste!</string>
+    <string name="empty_text">Brak wydatków. Idź i kup coś!</string>
+    <string name="purchase_date">Data zakupu</string>
+    <string name="bill_name">Nazwa rachunku</string>
+    <string name="amount">Kwota</string>
+    <string name="has_comment">Komentarz</string>
+    <string name="category">Kategoria</string>
+    <string name="comment">Jakiś komentarz</string>
+    <string name="save">Zapisz</string>
+    <string name="delete">Usuń</string>
+    <string name="export_to_csv">Wyeksportuj do CSV</string>
+</resources>

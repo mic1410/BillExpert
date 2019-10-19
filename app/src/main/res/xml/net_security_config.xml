@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">back4app.com</domain>
+        <pin-set expiration="2020-01-01">
+            <pin digest="SHA-256">AAwdftrYXtwXxwedg0n3KIIypxPVj+0z/ArPJqHVz3A=</pin>
+            <!-- backup pin: Amazon Root CA -->
+            <pin digest="SHA-256">++MBgDH5WGvL9Bcn5Be30cRcL0f5O+NyoXuWtQdX1aI=</pin>
+        </pin-set>
+    </domain-config>
+</network-security-config>

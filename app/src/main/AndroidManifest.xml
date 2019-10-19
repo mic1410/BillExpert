@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="pl.szkoleniaandroid.billexpert">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name=".App"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher_recipe"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/net_security_config"
+        android:roundIcon="@mipmap/ic_launcher_recipe_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
+
+        <meta-data
+            android:name="android.security.net.config"
+            android:resource="@xml/net_security_config" />
+
+        <activity
+            android:name=".features.bills.BillsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".features.signin.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".features.billdetails.BillDetailsActivity" />
+
+        <provider
+            android:name=".CsvFileProvider"
+            android:authorities="pl.szkoleniaandroid.billexpert.csv"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
+    </application>
+
+</manifest>

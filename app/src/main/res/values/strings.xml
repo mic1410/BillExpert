@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name" translatable="false">Bill Expert</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="login">Login</string>
+    <string name="add">Add</string>
+    <string name="refresh">Refresh</string>
+    <string name="logout">Logout</string>
+    <string name="total_amount">Total amount:</string>
+    <string name="insecure_environment_error_title">Insecure environment</string>
+    <string name="insecure_environment_message">We are done here!\nReason: %s</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="username_cant_be_empty">Username can\'t be empty!</string>
+    <string name="password_cant_be_empty">Password can\'t be empty!</string>
+    <string name="empty_text">No bills yet. Go and buy something!</string>
+    <string name="purchase_date">Purchase date</string>
+    <string name="bill_name">Bill name</string>
+    <string name="amount">Amount</string>
+    <string name="has_comment">Has comment</string>
+    <string name="category">Category</string>
+    <string name="comment">Comment</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="export_to_csv">Export to CSV</string>
+</resources>
