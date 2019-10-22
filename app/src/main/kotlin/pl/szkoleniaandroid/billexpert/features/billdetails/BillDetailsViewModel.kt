@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.android.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pl.szkoleniaandroid.billexpert.api.Bill

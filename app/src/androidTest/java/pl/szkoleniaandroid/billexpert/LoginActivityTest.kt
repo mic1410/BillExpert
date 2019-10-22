@@ -17,14 +17,11 @@ import androidx.test.rule.GrantPermissionRule
 import com.jraska.falcon.FalconSpoonRule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doAnswer
-import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.Rule
 import org.junit.Test
 import pl.szkoleniaandroid.billexpert.api.*
-import pl.szkoleniaandroid.billexpert.features.bills.BillsActivity
-import pl.szkoleniaandroid.billexpert.features.signin.LoginActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

@@ -5,8 +5,6 @@ buildscript {
 }
 
 
-
-
 //plugins {
 //    id("io.gitlab.arturbosch.detekt").version("1.0.0.RC9")
 //}
@@ -20,8 +18,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: "com.jaredsburrows.spoon"
 
 apply plugin: "io.gitlab.arturbosch.detekt"
-
-
+apply plugin: "androidx.navigation.safeargs"
 
 
 android {
@@ -61,6 +58,10 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
 
 }
 
@@ -78,6 +79,14 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
     implementation 'com.google.android.material:material:1.0.0'
+
+    def nav_version = "2.1.0"
+    // Kotlin
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    def paging_version = "2.1.0"
+
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
 
     //db
     def room_version = "2.1.0-alpha02"

@@ -1,7 +1,5 @@
 package pl.szkoleniaandroid.billexpert.features.bills
 
-import android.app.Activity
-import android.content.Intent
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,13 +8,14 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.szkoleniaandroid.billexpert.CsvFileProvider
 import pl.szkoleniaandroid.billexpert.R
 import pl.szkoleniaandroid.billexpert.api.Bill
 import pl.szkoleniaandroid.billexpert.databinding.FragmentBillsBinding
-import pl.szkoleniaandroid.billexpert.features.billdetails.BillDetailsActivity
+import pl.szkoleniaandroid.billexpert.features.billdetails.BillDetailsFragmentArgs
 
 class BillsListFragment : Fragment(), BillsView {
 
@@ -26,12 +25,17 @@ class BillsListFragment : Fragment(), BillsView {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         binding = FragmentBillsBinding.inflate(inflater, container, false)
-        binding.viewmodel = viewModel
-        binding.setLifecycleOwner(this)
+        binding.vm = viewModel
+        binding.lifecycleOwner= viewLifecycleOwner
         binding.swiperefresh.setOnRefreshListener {
             viewModel.loadBills()
         }
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbar)
     }
 
     init {
@@ -55,7 +59,7 @@ class BillsListFragment : Fragment(), BillsView {
     }
 
 
-    override fun onCreateOptionsMenu(menu: Menu?, menuInflater: MenuInflater) {
+    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_bills, menu)
     }
 
@@ -72,29 +76,22 @@ class BillsListFragment : Fragment(), BillsView {
             }
             R.id.action_logout -> {
                 viewModel.logout()
-                (activity as BillsActivity).goToLogin()
+                findNavController().navigate(BillsListFragmentDirections.navLoggedOut())
+                //(activity as BillsActivity).goToLogin()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == BillsActivity.REQUEST_ADD) {
-            if (resultCode == Activity.RESULT_OK) {
-                viewModel.loadBills()
-            } else {
-                Toast.makeText(activity, "Nothing added!", Toast.LENGTH_SHORT).show()
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
-
     override fun editBill(bill: Bill) {
-        val intent = Intent(activity, BillDetailsActivity::class.java)
-        intent.putExtra("bill", bill)
-        activity!!.startActivity(intent)
+        val bundle = BillDetailsFragmentArgs.Builder()
+                .setBill(bill)
+                .build().toBundle()
+        findNavController().navigate(R.id.nav_details, bundle)
+//        val intent = Intent(activity, BillDetailsActivity::class.java)
+//        intent.putExtra("bill", bill)
+//        activity!!.startActivity(intent)
     }
 
 }

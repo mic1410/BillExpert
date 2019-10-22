@@ -14,7 +14,7 @@ class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener 
 
     private var listener: DatePickerDialog.OnDateSetListener? = null
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = context as DatePickerDialog.OnDateSetListener?
     }

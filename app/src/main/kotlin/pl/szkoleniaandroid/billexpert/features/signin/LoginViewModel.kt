@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.android.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pl.szkoleniaandroid.billexpert.R
@@ -16,6 +15,8 @@ import pl.szkoleniaandroid.billexpert.db.UserRepository
 import pl.szkoleniaandroid.billexpert.repository.SessionRepository
 import pl.szkoleniaandroid.billexpert.security.hash
 import pl.szkoleniaandroid.billexpert.utils.Event
+import pl.szkoleniaandroid.billexpert.utils.ObservableString
+import pl.szkoleniaandroid.billexpert.utils.StringProvider
 import timber.log.Timber
 import java.io.IOException
 

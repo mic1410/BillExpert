@@ -16,6 +16,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.experimental.builder.viewModel
+import org.koin.androidx.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -30,7 +31,6 @@ import pl.szkoleniaandroid.billexpert.db.RoomUserRepository
 import pl.szkoleniaandroid.billexpert.db.UserRepository
 import pl.szkoleniaandroid.billexpert.features.billdetails.BillDetailsViewModel
 import pl.szkoleniaandroid.billexpert.features.bills.BillsListViewModel
-import pl.szkoleniaandroid.billexpert.features.bills.BillsViewModel
 import pl.szkoleniaandroid.billexpert.features.signin.ContextStringProvider
 import pl.szkoleniaandroid.billexpert.features.signin.LoginViewModel
 import pl.szkoleniaandroid.billexpert.features.signin.StringProvider
@@ -140,7 +140,10 @@ val appModule = module {
 
     //view models
     viewModel<BillDetailsViewModel>()
-    viewModel<BillsListViewModel>()
+    viewModel<BillsListViewModel>{BillsListViewModel(
+            billApi = get(),
+            sessionRepository = get(),
+            billRepository = get()
+    )}
     viewModel<LoginViewModel>()
-    viewModel<BillsViewModel>()
 }

@@ -6,7 +6,7 @@
     <data>
 
         <variable
-            name="viewmodel"
+            name="vm"
             type="pl.szkoleniaandroid.billexpert.features.signin.LoginViewModel" />
 
     </data>
@@ -41,8 +41,8 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="40dp"
             android:layout_marginEnd="16dp"
-            android:enabled="@{!viewmodel.inProgress}"
-            app:error="@{viewmodel.usernameError}"
+            android:enabled="@{!vm.inProgress}"
+            app:error="@{vm.usernameError}"
             app:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/username_hint"
                 android:maxLines="1"
-                android:text="@={viewmodel.username}" />
+                android:text="@={vm.username}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -62,7 +62,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="16dp"
-            android:enabled="@{!viewmodel.inProgress}">
+            android:enabled="@{!vm.inProgress}">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/password_edit_text"
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/password_hint"
                 android:inputType="textPassword"
-                android:text="@={viewmodel.password}" />
+                android:text="@={vm.password}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -84,17 +84,17 @@
             <Button
                 android:id="@+id/login_button"
                 style="@style/Widget.AppCompat.Button.Colored"
-                visible="@{!viewmodel.inProgress}"
+                visible="@{!vm.inProgress}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
-                android:onClick="@{()->viewmodel.loginClicked()}"
+                android:onClick="@{()->vm.loginClicked()}"
                 android:padding="20dp"
                 android:text="@string/login" />
 
             <ProgressBar
                 style="@style/Widget.AppCompat.ProgressBar"
-                visible="@{viewmodel.inProgress}"
+                visible="@{vm.inProgress}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center" />

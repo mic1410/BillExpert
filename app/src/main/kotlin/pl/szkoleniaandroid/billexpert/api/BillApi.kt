@@ -27,7 +27,7 @@ interface BillApi {
     fun postBill(@Body bill: Bill): Deferred<Response<PostBillResponse>>
 
     @GET("classes/Bill")
-    fun getBillsForUser(@Query("where") where: String): Deferred<Response<BillsResponse>>
+    fun getBillsForUser(@Query("where") where: String, @Query("limit") limit: Int): Deferred<Response<BillsResponse>>
 
     @PUT("classes/Bill/{id}")
     fun putBill(@Body bill: Bill, @Path("id") objectId: String): Deferred<Response<PutBillResponse>>

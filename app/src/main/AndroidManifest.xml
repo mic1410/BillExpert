@@ -21,18 +21,15 @@
             android:resource="@xml/net_security_config" />
 
         <activity
-            android:name=".features.bills.BillsActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".BillExpertActivity"
+            android:theme="@style/AppTheme.NoActionBar.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".features.signin.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".features.billdetails.BillDetailsActivity" />
+
 
         <provider
             android:name=".CsvFileProvider"

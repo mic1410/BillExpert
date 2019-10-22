@@ -2,6 +2,9 @@ package pl.szkoleniaandroid.billexpert.db
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import androidx.paging.DataSource
+import androidx.paging.PagedList
+import androidx.paging.toLiveData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -10,7 +13,7 @@ import org.threeten.bp.ZoneOffset
 import pl.szkoleniaandroid.billexpert.api.Bill
 
 interface BillRepository {
-    fun getBills(userId: String): LiveData<List<Bill>>
+    fun getBills(userId: String, loadBills: ()->Unit): LiveData<List<Bill>>
     fun getTotalAmount(userId: String): LiveData<Double>
     suspend fun getMaxUpdatedAt(userId: String): LocalDateTime
     suspend fun saveBill(bill: Bill)
@@ -36,9 +39,27 @@ class BillRoomRepository(private val billDao: BillDao) : BillRepository {
             billDao.getTotalAmountForUser(userId)
     ) { it.value }!!
 
-    override fun getBills(userId: String): LiveData<List<Bill>> {
-        return Transformations.map(billDao.getAllForUser(userId)) {
-            it.map { it.toBill() }
+    override fun getBills(userId: String, loadBills: ()->Unit): LiveData<List<Bill>> {
+        val liveData = billDao.getAllForUser(userId)
+                .toLiveData(pageSize = 3, boundaryCallback = object : PagedList.BoundaryCallback<BillDto>() {
+                    override fun onZeroItemsLoaded() {
+                        super.onZeroItemsLoaded()
+                        loadBills()
+                    }
+
+                    override fun onItemAtEndLoaded(itemAtEnd: BillDto) {
+                        super.onItemAtEndLoaded(itemAtEnd)
+                        loadBills()
+                    }
+
+                    override fun onItemAtFrontLoaded(itemAtFront: BillDto) {
+                        super.onItemAtFrontLoaded(itemAtFront)
+                        loadBills()
+                    }
+
+                })
+        return Transformations.map(liveData) {
+            it.filterNotNull().map { it.toBill() }
         }
     }
 

@@ -5,15 +5,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.paging.PagedList
+import androidx.paging.toLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.android.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.bindingcollectionadapter2.OnItemBind
 import org.json.JSONObject
 import pl.szkoleniaandroid.billexpert.BR
 import pl.szkoleniaandroid.billexpert.R
+import pl.szkoleniaandroid.billexpert.api.Bill
 import pl.szkoleniaandroid.billexpert.api.BillApi
 import pl.szkoleniaandroid.billexpert.db.BillRepository
 import pl.szkoleniaandroid.billexpert.di.LOCAL_DATE_TIME_FORMATTER
@@ -21,11 +23,17 @@ import pl.szkoleniaandroid.billexpert.repository.SessionRepository
 import timber.log.Timber
 import java.net.UnknownHostException
 
-class BillsListViewModel(private val billApi: BillApi,
-                         private val sessionRepository: SessionRepository,
-                         private val billRepository: BillRepository) : ViewModel() {
+class BillsListViewModel(
+        private val billApi: BillApi,
+        private val sessionRepository: SessionRepository,
+        private val billRepository: BillRepository
+) : ViewModel() {
 
-    val bills = billRepository.getBills(sessionRepository.currentUser!!.objectId)
+    val totalAmount: LiveData<Double> =
+            billRepository.getTotalAmount(sessionRepository.currentUser!!.objectId)
+
+    val bills = billRepository.getBills(sessionRepository.currentUser!!.objectId, {loadBills()})
+
     val billsLiveData: LiveData<List<Item>> = Transformations.map(bills) {
         it.map {
             BillItem(
@@ -70,33 +78,38 @@ class BillsListViewModel(private val billApi: BillApi,
         isLoadingLiveData.value = true
         GlobalScope.launch(Dispatchers.Main) {
 
-            val maxUpdatedAt = billRepository.getMaxUpdatedAt(sessionRepository.currentUser?.objectId!!)
-            val where = JSONObject()
-            where.put("userId", sessionRepository.currentUser?.objectId!!)
-            val updatedAtWhere = JSONObject()
-            val isoDate = LOCAL_DATE_TIME_FORMATTER.format(maxUpdatedAt)
-            val jsonDate = JSONObject()
-            jsonDate.put("__type", "Date")
-            jsonDate.put("iso", isoDate)
-            updatedAtWhere.put("\$gte", jsonDate)
-            where.put("updatedAt", updatedAtWhere)
-            try {
+            sessionRepository.currentUser?.objectId?.let { userId ->
 
-                val response = billApi.getBillsForUser(where.toString()).await()
-                if (response.isSuccessful) {
+                val maxUpdatedAt = billRepository.getMaxUpdatedAt(userId)
+                val where = JSONObject()
+                where.put("userId", userId)
+                val updatedAtWhere = JSONObject()
+                val isoDate = LOCAL_DATE_TIME_FORMATTER.format(maxUpdatedAt)
+                val jsonDate = JSONObject()
+                jsonDate.put("__type", "Date")
+                jsonDate.put("iso", isoDate)
+                updatedAtWhere.put("\$gte", jsonDate)
+                where.put("updatedAt", updatedAtWhere)
+                try {
 
-                    val bills = response.body()!!.results
-                    GlobalScope.launch {
-                        billRepository.saveBills(bills)
-                        withContext(Dispatchers.Main) {
-                            isLoadingLiveData.value = false
+                    val response = billApi.getBillsForUser(where.toString(), limit = 3).await()
+                    if (response.isSuccessful) {
+
+                        val bills = response.body()!!.results
+                        GlobalScope.launch {
+                            billRepository.saveBills(bills)
+                            withContext(Dispatchers.Main) {
+                                isLoadingLiveData.value = false
+                            }
                         }
                     }
+                } catch (e: UnknownHostException) {
+                    Timber.e(e)
+                    //TODO handle errors
                 }
-            } catch (e: UnknownHostException) {
-                Timber.e(e)
-                //TODO handle errors
             }
+
+
         }
 
     }
