@@ -5,6 +5,7 @@ import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -16,15 +17,22 @@ import pl.szkoleniaandroid.billexpert.api.Category
 import pl.szkoleniaandroid.billexpert.api.PostBillResponse
 import pl.szkoleniaandroid.billexpert.api.PutBillResponse
 import pl.szkoleniaandroid.billexpert.db.BillRepository
-import pl.szkoleniaandroid.billexpert.features.signin.ObservableString
+import pl.szkoleniaandroid.billexpert.domain.usecases.CreateBillUseCase
+import pl.szkoleniaandroid.billexpert.domain.usecases.DeleteBillUseCase
+import pl.szkoleniaandroid.billexpert.domain.usecases.UpdateBillUseCase
+import pl.szkoleniaandroid.billexpert.repository.BillsRemoteRepository
 import pl.szkoleniaandroid.billexpert.repository.SessionRepository
-import pl.szkoleniaandroid.billexpert.utils.Event
+import pl.szkoleniaandroid.billexpert.utils.LiveEvent
+import pl.szkoleniaandroid.billexpert.utils.ObservableString
 import retrofit2.Response
 import java.util.*
 
-class BillDetailsViewModel(private val billApi: BillApi,
-                           private val sessionRepository: SessionRepository,
-                           private val billRepository: BillRepository) : ViewModel() {
+class BillDetailsViewModel(
+        private val sessionRepository: SessionRepository,
+        private val createBillUseCase: CreateBillUseCase,
+        private val updateBillUseCase: UpdateBillUseCase,
+        private val deleteBillUseCase: DeleteBillUseCase
+) : ViewModel() {
 
     private var originalBill = Bill(
             userId = sessionRepository.currentUser!!.objectId
@@ -38,8 +46,9 @@ class BillDetailsViewModel(private val billApi: BillApi,
     val hasComment: ObservableBoolean = ObservableBoolean(originalBill.comment.isNotBlank())
     val categories = Category.values().toList()
     val selectedCategoryIndex = ObservableInt(originalBill.category.ordinal)
-    val pickDate = MutableLiveData<Event<Unit>>()
-    val savedLiveData = MutableLiveData<Event<Bill>>()
+
+    val pickDate = LiveEvent<Unit>()
+    val savedLiveData = LiveEvent<Unit>()
 
     fun setBill(bill: Bill) {
         originalBill = bill
@@ -106,41 +115,28 @@ class BillDetailsViewModel(private val billApi: BillApi,
     }
 
     private fun createBill(bill: Bill) {
-        val call: Deferred<Response<PostBillResponse>> = billApi.postBill(bill)
-        GlobalScope.launch(Dispatchers.Main) {
-            val response = call.await()
-            if (response.isSuccessful) {
-                launch {
-                    val body = response.body()!!
-                    val newBill = bill.copy(objectId = body.objectId, createdAt = body.createdAt,
-                            updatedAt = body.createdAt)
-                    billRepository.saveBill(newBill)
-                    withContext(Dispatchers.Main) {
-                        savedLiveData.value = Event(newBill)
-                    }
-                }
+        viewModelScope.launch {
+            createBill(bill)
+            withContext(Dispatchers.Main) {
+                savedLiveData.value = Unit
             }
         }
+
+
     }
 
     private fun updateBill(bill: Bill) {
-        val call: Deferred<Response<PutBillResponse>> = billApi.putBill(bill, originalBill.objectId)
-        GlobalScope.launch(Dispatchers.Main) {
-            val response = call.await()
-            if (response.isSuccessful) {
-                launch {
-                    billRepository.updateBill(bill.copy(updatedAt = response.body()!!.updatedAt))
-                    withContext(Dispatchers.Main) {
-                        savedLiveData.value = Event(bill)
+        viewModelScope.launch {
+            updateBill(bill)
+            withContext(Dispatchers.Main) {
+                savedLiveData.value = Unit
 
-                    }
-                }
             }
         }
     }
 
     fun pickDateClicked() {
-        pickDate.value = Event(Unit)
+        pickDate.value = Unit
     }
 
     fun setDate(year: Int, month: Int, dayOfMonth: Int) {
@@ -148,15 +144,12 @@ class BillDetailsViewModel(private val billApi: BillApi,
     }
 
     fun deleteBill() {
-        GlobalScope.launch {
-            val call: Deferred<Response<Any>> = billApi.deleteBill(originalBill.objectId)
-            val response = call.await()
-            if (response.isSuccessful) {
-                billRepository.deleteBill(originalBill)
-                withContext(Dispatchers.Main) {
-                    savedLiveData.value = Event(originalBill)
-                }
-            }
+        viewModelScope.launch {
+            deleteBillUseCase(originalBill)
+            savedLiveData.value = Unit
         }
+
     }
 }
+
+

@@ -1,10 +1,12 @@
 package pl.szkoleniaandroid.billexpert.db
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import pl.szkoleniaandroid.billexpert.security.hash
 
 interface UserRepository {
 
-    fun save(user: User)
+    suspend fun save(user: User)
 
     fun getUserByAuthData(username: String, password: String): User?
 
@@ -13,7 +15,7 @@ interface UserRepository {
 
 class RoomUserRepository(private val userDao: UserDao) : UserRepository {
 
-    override fun save(user: User) {
+    override suspend fun save(user: User) = withContext(Dispatchers.IO) {
         userDao.insert(
                 UserDto().apply {
                     this.objectId = user.objectId

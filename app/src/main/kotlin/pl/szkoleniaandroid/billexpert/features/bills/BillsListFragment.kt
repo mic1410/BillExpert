@@ -26,6 +26,9 @@ class BillsListFragment : Fragment(), BillsView {
                               savedInstanceState: Bundle?): View? {
         binding = FragmentBillsBinding.inflate(inflater, container, false)
         binding.vm = viewModel
+        binding.listener = Runnable {
+                findNavController().navigate(R.id.nav_details)
+        }
         binding.lifecycleOwner= viewLifecycleOwner
         binding.swiperefresh.setOnRefreshListener {
             viewModel.loadBills()

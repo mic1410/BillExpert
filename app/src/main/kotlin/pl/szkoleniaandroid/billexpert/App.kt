@@ -3,10 +3,9 @@ package pl.szkoleniaandroid.billexpert
 import android.app.Application
 import com.facebook.stetho.Stetho
 import com.jakewharton.threetenabp.AndroidThreeTen
-import org.koin.android.ext.android.getKoin
-import org.koin.android.ext.android.startKoin
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 import pl.szkoleniaandroid.billexpert.di.appModule
-import pl.szkoleniaandroid.billexpert.repository.SessionRepository
 import timber.log.Timber
 
 class App : Application() {
@@ -20,6 +19,9 @@ class App : Application() {
         Stetho.initializeWithDefaults(this)
 
         AndroidThreeTen.init(this)
-        startKoin(this, listOf(appModule))
+        startKoin {
+            androidContext(this@App)
+            modules(appModule)
+        }
     }
 }

@@ -1,4 +1,5 @@
 @file:Suppress("MatchingDeclarationName")
+
 package pl.szkoleniaandroid.billexpert.di
 
 import android.preference.PreferenceManager
@@ -13,11 +14,12 @@ import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.experimental.builder.viewModel
-import org.koin.androidx.viewmodel.ext.koin.viewModel
-import org.koin.dsl.module.module
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.bind
+import org.koin.dsl.module
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import pl.szkoleniaandroid.billexpert.api.BASE_URL
@@ -29,14 +31,18 @@ import pl.szkoleniaandroid.billexpert.db.BillRepository
 import pl.szkoleniaandroid.billexpert.db.BillRoomRepository
 import pl.szkoleniaandroid.billexpert.db.RoomUserRepository
 import pl.szkoleniaandroid.billexpert.db.UserRepository
+import pl.szkoleniaandroid.billexpert.domain.usecases.CreateBillUseCase
+import pl.szkoleniaandroid.billexpert.domain.usecases.DeleteBillUseCase
+import pl.szkoleniaandroid.billexpert.domain.usecases.SignInUseCase
+import pl.szkoleniaandroid.billexpert.domain.usecases.UpdateBillUseCase
 import pl.szkoleniaandroid.billexpert.features.billdetails.BillDetailsViewModel
 import pl.szkoleniaandroid.billexpert.features.bills.BillsListViewModel
-import pl.szkoleniaandroid.billexpert.features.signin.ContextStringProvider
 import pl.szkoleniaandroid.billexpert.features.signin.LoginViewModel
-import pl.szkoleniaandroid.billexpert.features.signin.StringProvider
-import pl.szkoleniaandroid.billexpert.repository.SessionRepository
-import pl.szkoleniaandroid.billexpert.repository.SessionRepositoryImpl
+import pl.szkoleniaandroid.billexpert.repository.*
 import pl.szkoleniaandroid.billexpert.security.hash
+import pl.szkoleniaandroid.billexpert.utils.ContextStringProvider
+import pl.szkoleniaandroid.billexpert.utils.StringProvider
+import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.IOException
@@ -138,12 +144,62 @@ val appModule = module {
     single<BillApi> { get<Retrofit>().create(BillApi::class.java) }
     single<StringProvider> { ContextStringProvider(androidContext()) }
 
+    single { BillsApiRepository(billApi = get(), errorConverter = get()) } bind BillsRemoteRepository::class
+
+    single {
+        val converter: Converter<ResponseBody, ApiError> = get<Retrofit>().responseBodyConverter(ApiError::class.java, emptyArray())
+        return@single converter
+
+    }
+
+    factory {
+        SignInUseCase(
+                billsRepository = get(),
+                sessionRepository = get(),
+                userRepository = get()
+        )
+    }
+
+    factory {
+        DeleteBillUseCase(
+                billsRepository = get(),
+                billRepository = get()
+        )
+    }
+
+    factory {
+        CreateBillUseCase(
+                billsRepository = get(),
+                billRepository = get()
+        )
+    }
+
+    factory {
+        UpdateBillUseCase(
+                billRepository = get(),
+                billsRepository = get()
+        )
+    }
     //view models
-    viewModel<BillDetailsViewModel>()
-    viewModel<BillsListViewModel>{BillsListViewModel(
-            billApi = get(),
-            sessionRepository = get(),
-            billRepository = get()
-    )}
-    viewModel<LoginViewModel>()
+    viewModel {
+        BillDetailsViewModel(
+                sessionRepository = get(),
+                createBillUseCase = get(),
+                updateBillUseCase = get(),
+                deleteBillUseCase = get()
+        )
+    }
+    viewModel {
+        BillsListViewModel(
+                billApi = get(),
+                sessionRepository = get(),
+                billRepository = get()
+        )
+    }
+    viewModel {
+        LoginViewModel(
+                stringProvider = get(),
+                signInUseCase = get()
+        )
+    }
 }

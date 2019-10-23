@@ -1,40 +1,27 @@
 package pl.szkoleniaandroid.billexpert.features.signin
 
-import androidx.databinding.ObservableBoolean
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import pl.szkoleniaandroid.billexpert.R
-import pl.szkoleniaandroid.billexpert.api.BillApi
-import pl.szkoleniaandroid.billexpert.db.User
-import pl.szkoleniaandroid.billexpert.db.UserRepository
-import pl.szkoleniaandroid.billexpert.repository.SessionRepository
-import pl.szkoleniaandroid.billexpert.security.hash
-import pl.szkoleniaandroid.billexpert.utils.Event
+import pl.szkoleniaandroid.billexpert.domain.usecases.SignInUseCase
+import pl.szkoleniaandroid.billexpert.repository.RepositoryError
+import pl.szkoleniaandroid.billexpert.utils.LiveEvent
 import pl.szkoleniaandroid.billexpert.utils.ObservableString
 import pl.szkoleniaandroid.billexpert.utils.StringProvider
-import timber.log.Timber
-import java.io.IOException
 
 class LoginViewModel(
-        val billApi: BillApi,
-        val stringProvider: StringProvider,
-        val sessionRepository: SessionRepository,
-        val userRepository: UserRepository
+        private val stringProvider: StringProvider,
+        private val signInUseCase: SignInUseCase
 ) : ViewModel() {
     val username = ObservableString("")
     val password = ObservableString("")
     val usernameError = ObservableString("")
     var passwordError = ObservableString("")
-    val inProgress = ObservableBoolean(false)
+    val uiState = LiveEvent<LoginUiModel>()
 
-    val uiState = MutableLiveData<LoginUiModel>()
-
-    private var loginJob: Job? = null
+    val inProgress = uiState.map { uiState.value == LoginInProgress }
 
     fun loginClicked() {
         var valid = true
@@ -54,53 +41,20 @@ class LoginViewModel(
     }
 
     private fun performLogin(usernameString: String, passwordString: String) {
-
-        if (loginJob?.isActive == true) return
-        inProgress.set(true)
-        uiState.value = LoginInProgress
-
-        loginJob = GlobalScope.launch {
+        viewModelScope.launch {
             try {
-                val response = billApi.getLogin(usernameString, passwordString).await()
-                Timber.d(response.toString())
-                if (response.isSuccessful) {
-                    val loginResponse = response.body()!!
-                    val user = User(
-                            objectId = loginResponse.objectId,
-                            username = loginResponse.username,
-                            password = passwordString.hash(),
-                            token = loginResponse.sessionToken
-                    )
-                    userRepository.save(user)
-                    sessionRepository.saveCurrentUser(user)
-                    withContext(Dispatchers.Main) {
-                        uiState.value = LoginSuccessful()
-                        inProgress.set(false)
-                    }
-                } else {
-                    val error = response.errorBody()
-                    withContext(Dispatchers.Main) {
-                        uiState.value = LoginError(Event("Some error from api"))
-                        inProgress.set(false)
-                    }
-                }
-            } catch (e: IOException) {
-                Timber.e(e)
-                withContext(Dispatchers.Main) {
-                    uiState.value = LoginError(Event("Some connection error"))
-                }
+                uiState.value = LoginInProgress
+                signInUseCase(usernameString, passwordString)
+                uiState.value = LoginSuccessful()
+            } catch (error: RepositoryError) {
+                uiState.value = LoginError(error.message!!)
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        loginJob?.cancel()
     }
 }
 
 sealed class LoginUiModel
 
 object LoginInProgress : LoginUiModel()
-data class LoginError(val error: Event<String>) : LoginUiModel()
-data class LoginSuccessful(val showSuccess: Event<Unit> = Event(Unit)) : LoginUiModel()
+data class LoginError(val error: String) : LoginUiModel()
+class LoginSuccessful : LoginUiModel()

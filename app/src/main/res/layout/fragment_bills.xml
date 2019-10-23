@@ -49,8 +49,7 @@
                     android:layout_height="?attr/actionBarSize"
                     android:gravity="center_horizontal"
                     app:layout_collapseMode="pin"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                    app:subtitle="adasd">
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
                 </androidx.appcompat.widget.Toolbar>
 

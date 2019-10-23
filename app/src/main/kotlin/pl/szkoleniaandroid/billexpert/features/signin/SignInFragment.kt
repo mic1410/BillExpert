@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.szkoleniaandroid.billexpert.databinding.ActivityLoginBinding
+import pl.szkoleniaandroid.billexpert.utils.exhaustive
 
 class SignInFragment : Fragment() {
 
@@ -18,6 +19,7 @@ class SignInFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ActivityLoginBinding.inflate(inflater, container, false).apply {
             vm = viewModel
+            lifecycleOwner = viewLifecycleOwner
         }.root
     }
 
@@ -25,15 +27,12 @@ class SignInFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.uiState.observe(this, Observer {
             when (it) {
-                is LoginInProgress -> {
-                }
+                is LoginInProgress -> Unit
                 is LoginError -> {
-                    if (!it.error.consumed) {
-                        Toast.makeText(requireContext(), it.error.consume(), Toast.LENGTH_LONG).show()
-                    }
+                    Toast.makeText(requireContext(), it.error, Toast.LENGTH_LONG).show()
                 }
                 is LoginSuccessful -> goToBills()
-            }
+            }.exhaustive
         })
     }
 

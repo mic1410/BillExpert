@@ -9,7 +9,7 @@
     <item>
 
         <bitmap
-            android:gravity="center"
+            android:gravity="top"
             android:src="@drawable/top" />
 
     </item>

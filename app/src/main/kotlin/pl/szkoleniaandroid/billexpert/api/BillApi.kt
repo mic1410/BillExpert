@@ -19,19 +19,19 @@ interface BillApi {
 
     @Headers("X-Parse-Revocable-Session: 1")
     @GET("login")
-    fun getLogin(@Query("username") username: String,
-                 @Query("password") password: String): Deferred<Response<LoginResponse>>
+    suspend fun getLogin(@Query("username") username: String,
+                 @Query("password") password: String): LoginResponse
 
 
     @POST("classes/Bill")
-    fun postBill(@Body bill: Bill): Deferred<Response<PostBillResponse>>
+    suspend fun postBill(@Body bill: Bill): PostBillResponse
 
     @GET("classes/Bill")
-    fun getBillsForUser(@Query("where") where: String, @Query("limit") limit: Int): Deferred<Response<BillsResponse>>
+    suspend fun getBillsForUser(@Query("where") where: String, @Query("limit") limit: Int): BillsResponse
 
     @PUT("classes/Bill/{id}")
-    fun putBill(@Body bill: Bill, @Path("id") objectId: String): Deferred<Response<PutBillResponse>>
+    suspend fun putBill(@Body bill: Bill, @Path("id") objectId: String): PutBillResponse
 
     @DELETE("classes/Bill/{id}")
-    fun deleteBill(@Path("id") objectId: String): Deferred<Response<Any>>
+    suspend fun deleteBill(@Path("id") objectId: String)
 }

@@ -32,7 +32,7 @@ class BillsListViewModel(
     val totalAmount: LiveData<Double> =
             billRepository.getTotalAmount(sessionRepository.currentUser!!.objectId)
 
-    val bills = billRepository.getBills(sessionRepository.currentUser!!.objectId, {loadBills()})
+    val bills = billRepository.getBills(sessionRepository.currentUser!!.objectId, { loadBills() })
 
     val billsLiveData: LiveData<List<Item>> = Transformations.map(bills) {
         it.map {
@@ -92,15 +92,11 @@ class BillsListViewModel(
                 where.put("updatedAt", updatedAtWhere)
                 try {
 
-                    val response = billApi.getBillsForUser(where.toString(), limit = 3).await()
-                    if (response.isSuccessful) {
-
-                        val bills = response.body()!!.results
-                        GlobalScope.launch {
-                            billRepository.saveBills(bills)
-                            withContext(Dispatchers.Main) {
-                                isLoadingLiveData.value = false
-                            }
+                    val bills = billApi.getBillsForUser(where.toString(), limit = 3).results
+                    GlobalScope.launch {
+                        billRepository.saveBills(bills)
+                        withContext(Dispatchers.Main) {
+                            isLoadingLiveData.value = false
                         }
                     }
                 } catch (e: UnknownHostException) {
