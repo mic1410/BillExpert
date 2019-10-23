@@ -22,4 +22,5 @@
     <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="export_to_csv">Export to CSV</string>
+    <string name="invalid_credentials">Invalid credentials</string>
 </resources>
