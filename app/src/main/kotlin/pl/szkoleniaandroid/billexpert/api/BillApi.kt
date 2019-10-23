@@ -13,6 +13,9 @@ const val REST_APP_ID = "RRQfzogXeuQI2VzK0bqEgn02IElfm3ifCUf1lNQX"
 const val REST_API_KEY = "mt4btJUcnmVaEJGzncHqkogm0lDM3n2185UNSjiX"
 const val BASE_URL = "https://parseapi.back4app.com/"
 
+/**
+ * Retrofit interface
+ */
 interface BillApi {
 
     @Headers("X-Parse-Revocable-Session: 1")
