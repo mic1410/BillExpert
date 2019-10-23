@@ -31,11 +31,6 @@
         </activity>
 
 
-        <provider
-            android:name=".CsvFileProvider"
-            android:authorities="pl.szkoleniaandroid.billexpert.csv"
-            android:exported="true"
-            tools:ignore="ExportedContentProvider" />
     </application>
 
 </manifest>

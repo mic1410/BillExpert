@@ -1,7 +1,5 @@
 package pl.szkoleniaandroid.billexpert.api
 
-import kotlinx.coroutines.Deferred
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
