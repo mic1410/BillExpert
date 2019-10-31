@@ -7,30 +7,32 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.szkoleniaandroid.billexpert.R
 import pl.szkoleniaandroid.billexpert.databinding.ActivityLoginBinding
 import pl.szkoleniaandroid.billexpert.domain.usecase.SignInUseCase
-import pl.szkoleniaandroid.billexpert.utils.ContextStringProvider
 import pl.szkoleniaandroid.billexpert.utils.ObservableString
 import pl.szkoleniaandroid.billexpert.utils.StringProvider
 
 class SignInFragment : Fragment() {
 
-    lateinit var viewModel: SignInViewModel
+    val viewModel by viewModel<SignInViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ActivityLoginBinding.inflate(inflater, container, false).apply {
-            viewModel = ViewModelProviders.of(this@SignInFragment, object : ViewModelProvider.Factory {
-                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                    return SignInViewModel(
-                            stringProvider = ContextStringProvider(requireContext()),
-                            signInUseCase = SignInUseCase()
-                    ) as T
-                }
+            /*            viewModel = ViewModelProviders.of(this@SignInFragment, object : ViewModelProvider.Factory {
+                            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                                return SignInViewModel(
+                                        stringProvider = ContextStringProvider(requireContext()),
+                                        signInUseCase = SignInUseCase()
+                                ) as T
+                            }
 
-            }
-            ).get(SignInViewModel::class.java)
+                        }
+                        ).get(SignInViewModel::class.java)*/
 
 
             this.vm = viewModel
