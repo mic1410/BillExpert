@@ -7,29 +7,32 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
 import pl.szkoleniaandroid.billexpert.R
 import pl.szkoleniaandroid.billexpert.databinding.ActivityLoginBinding
 import pl.szkoleniaandroid.billexpert.domain.usecase.SignInUseCase
 import pl.szkoleniaandroid.billexpert.utils.ContextStringProvider
 import pl.szkoleniaandroid.billexpert.utils.ObservableString
+import pl.szkoleniaandroid.billexpert.utils.StringProvider
 
 class SignInFragment : Fragment() {
 
     lateinit var viewModel: SignInViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        //data binding, will make login screen show
-        // return ActivityLoginBinding.inflate(inflater, container, false).root
-
         return ActivityLoginBinding.inflate(inflater, container, false).apply {
-            viewModel = SignInViewModel(
-                    stringProvider = ContextStringProvider(requireContext()),
-                    signInUseCase = SignInUseCase()
-            )
+            viewModel = ViewModelProviders.of(this@SignInFragment, object : ViewModelProvider.Factory {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    return SignInViewModel(
+                            stringProvider = ContextStringProvider(requireContext()),
+                            signInUseCase = SignInUseCase()
+                    ) as T
+                }
+
+            }
+            ).get(SignInViewModel::class.java)
+
+
             this.vm = viewModel
         }.root
     }
@@ -41,13 +44,12 @@ class SignInFragment : Fragment() {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
         })
     }
-
 }
 
 class SignInViewModel(
-        private val stringProvider: ContextStringProvider,
-        private var signInUseCase: SignInUseCase
-) {
+        private val stringProvider: StringProvider,
+        private val signInUseCase: SignInUseCase
+) : ViewModel() {
 
     val username = ObservableString("")
     val usernameError = ObservableString("")
@@ -81,10 +83,5 @@ class SignInViewModel(
             }
 
         }
-
     }
-
 }
-
-
-

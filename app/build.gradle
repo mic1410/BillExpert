@@ -129,6 +129,7 @@ dependencies {
     androidTestImplementation 'com.jraska:falcon:2.1.1'
     androidTestImplementation 'com.jraska:falcon-spoon-compat:2.1.1'
     androidTestImplementation "com.squareup.spoon:spoon-client:2.0.0-SNAPSHOT"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
 }
 
 detekt {
