@@ -6,10 +6,12 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import pl.szkoleniaandroid.billexpert.domain.usecase.SignInUseCase
 import pl.szkoleniaandroid.billexpert.features.signin.SignInViewModel
 import pl.szkoleniaandroid.billexpert.utils.ContextStringProvider
+import pl.szkoleniaandroid.billexpert.utils.StringProvider
 import timber.log.Timber
 
 class App : Application() {
@@ -28,9 +30,12 @@ class App : Application() {
 }
 
 val appModule = module {
+
+    single { ContextStringProvider(androidApplication()) } bind StringProvider::class
+
     viewModel {
         SignInViewModel(
-                stringProvider = ContextStringProvider(androidApplication()),
+                stringProvider = get(),
                 signInUseCase = SignInUseCase())
     }
 
