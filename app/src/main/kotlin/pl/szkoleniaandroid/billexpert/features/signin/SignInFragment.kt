@@ -7,34 +7,22 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.szkoleniaandroid.billexpert.R
 import pl.szkoleniaandroid.billexpert.databinding.ActivityLoginBinding
 import pl.szkoleniaandroid.billexpert.domain.usecase.SignInUseCase
+import pl.szkoleniaandroid.billexpert.utils.LiveEvent
 import pl.szkoleniaandroid.billexpert.utils.ObservableString
 import pl.szkoleniaandroid.billexpert.utils.StringProvider
 
 class SignInFragment : Fragment() {
 
-    val viewModel by viewModel<SignInViewModel>()
+    private val viewModel by viewModel<SignInViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ActivityLoginBinding.inflate(inflater, container, false).apply {
-            /*            viewModel = ViewModelProviders.of(this@SignInFragment, object : ViewModelProvider.Factory {
-                            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                                return SignInViewModel(
-                                        stringProvider = ContextStringProvider(requireContext()),
-                                        signInUseCase = SignInUseCase()
-                                ) as T
-                            }
-
-                        }
-                        ).get(SignInViewModel::class.java)*/
-
-
             this.vm = viewModel
         }.root
     }
@@ -45,6 +33,11 @@ class SignInFragment : Fragment() {
         viewModel.showErrorLiveData.observe(this, Observer {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
         })
+        viewModel.goToBillsEvent.observe(this) {
+            findNavController().navigate(SignInFragmentDirections.navSignedIn())
+
+        }
+
     }
 }
 
@@ -59,7 +52,9 @@ class SignInViewModel(
     val passwordError = ObservableString("")
     val inProgress = ObservableBoolean(false)
 
-    val showErrorLiveData = MutableLiveData<String>("")
+    //me: we use LiveEvent class here which emits data just once
+    val showErrorLiveData = LiveEvent<String>()
+    val goToBillsEvent = LiveEvent<Unit>()
 
     fun loginClicked() {
         var isValid = true
@@ -78,6 +73,8 @@ class SignInViewModel(
             //me: in MVP here would be interface with methods to notify user in UI
             if (result) {
                 //GO TO BILLS
+                goToBillsEvent.value = Unit
+
             } else {
                 //me: in pure Clean Architecture String should also be provided by e.g. new StringErrorProvider class
                 showErrorLiveData.value = stringProvider.getString(R.string.invalid_credentials)
