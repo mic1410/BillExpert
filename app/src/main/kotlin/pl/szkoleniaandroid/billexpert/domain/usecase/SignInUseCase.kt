@@ -8,7 +8,7 @@ class SignInUseCase(
         private val localRepository: LocalRepository
 ) {
 
-    operator fun invoke(username: String, password: String): Boolean {
+    suspend operator fun invoke(username: String, password: String): Boolean {
         val user = remoteRepository.login(username, password)
         localRepository.saveUser(user)
         return true

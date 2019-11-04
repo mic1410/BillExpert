@@ -7,8 +7,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.observe
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.szkoleniaandroid.billexpert.R
 import pl.szkoleniaandroid.billexpert.databinding.ActivityLoginBinding
@@ -46,9 +50,9 @@ class SignInViewModel(
         private val signInUseCase: SignInUseCase
 ) : ViewModel() {
 
-    val username = ObservableString("")
+    val username = ObservableString("test")
     val usernameError = ObservableString("")
-    val password = ObservableString("")
+    val password = ObservableString("pass")
     val passwordError = ObservableString("")
     val inProgress = ObservableBoolean(false)
 
@@ -65,22 +69,25 @@ class SignInViewModel(
         }
 
         if (isValid) {
-            val result = signInUseCase(
-                    username = username.get()!!,
-                    password = password.get()!!
-            )
+            viewModelScope.launch {
 
-            //me: in MVP here would be interface with methods to notify user in UI
-            if (result) {
-                //GO TO BILLS
-                goToBillsEvent.value = Unit
+                val result = signInUseCase(
+                        username = username.get()!!,
+                        password = password.get()!!
+                )
 
-            } else {
-                //me: in pure Clean Architecture String should also be provided by e.g. new StringErrorProvider class
-                showErrorLiveData.value = stringProvider.getString(R.string.invalid_credentials)
-                //SHOW ERROR
+                //me: in MVP here would be interface with methods to notify user in UI
+                if (result) {
+                    //GO TO BILLS
+                    goToBillsEvent.value = Unit
+
+                } else {
+                    //me: in pure Clean Architecture String should also be provided by e.g. new StringErrorProvider class
+                    showErrorLiveData.value = stringProvider.getString(R.string.invalid_credentials)
+                    //SHOW ERROR
+                }
+
             }
-
         }
     }
 }
