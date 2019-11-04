@@ -70,23 +70,28 @@ class SignInViewModel(
 
         if (isValid) {
             viewModelScope.launch {
+                inProgress.set(true)
+                try {
+                    val result = signInUseCase(
+                            username = username.get()!!,
+                            password = password.get()!!
+                    )
 
-                val result = signInUseCase(
-                        username = username.get()!!,
-                        password = password.get()!!
-                )
+                    //me: in MVP here would be interface with methods to notify user in UI
+                    if (result) {
+                        //GO TO BILLS
+                        goToBillsEvent.value = Unit
 
-                //me: in MVP here would be interface with methods to notify user in UI
-                if (result) {
-                    //GO TO BILLS
-                    goToBillsEvent.value = Unit
-
-                } else {
-                    //me: in pure Clean Architecture String should also be provided by e.g. new StringErrorProvider class
-                    showErrorLiveData.value = stringProvider.getString(R.string.invalid_credentials)
-                    //SHOW ERROR
+                    } else {
+                        //me: in pure Clean Architecture String should also be provided by e.g. new StringErrorProvider class
+                        showErrorLiveData.value = stringProvider.getString(R.string.invalid_credentials)
+                        //SHOW ERROR
+                    }
+                } catch (ex: Exception) {
+                    showErrorLiveData.value = ex.localizedMessage
+                } finally {
+                    inProgress.set(false)
                 }
-
             }
         }
     }
