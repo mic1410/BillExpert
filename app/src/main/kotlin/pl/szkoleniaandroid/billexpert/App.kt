@@ -19,10 +19,10 @@ import pl.szkoleniaandroid.billexpert.api.REST_API_KEY
 import pl.szkoleniaandroid.billexpert.api.REST_APP_ID
 import pl.szkoleniaandroid.billexpert.data.repositories.ApiRemoteRepository
 import pl.szkoleniaandroid.billexpert.data.repositories.SPLocalStorage
-import pl.szkoleniaandroid.billexpert.domain.model.LoggedUser
 import pl.szkoleniaandroid.billexpert.domain.repositories.LocalRepository
 import pl.szkoleniaandroid.billexpert.domain.repositories.RemoteRepository
 import pl.szkoleniaandroid.billexpert.domain.usecase.SignInUseCase
+import pl.szkoleniaandroid.billexpert.features.bills.BillsListViewModel
 import pl.szkoleniaandroid.billexpert.features.signin.SignInViewModel
 import pl.szkoleniaandroid.billexpert.utils.ContextStringProvider
 import pl.szkoleniaandroid.billexpert.utils.StringProvider
@@ -102,5 +102,9 @@ val appModule = module {
                 stringProvider = get(),
                 signInUseCase = get()
         )
+    }
+
+    viewModel {
+        BillsListViewModel()
     }
 }
