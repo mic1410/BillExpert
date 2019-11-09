@@ -8,6 +8,10 @@ class SPLocalStorage(
         private val sharedPreferences: SharedPreferences
 ) : LocalRepository {
 
+    override fun getUserId(): String {
+        return sharedPreferences.getString("id", "")!!
+    }
+
     override fun saveUser(user: LoggedUser) {
         sharedPreferences.edit().apply {
             putString("id", user.userId)
@@ -15,4 +19,5 @@ class SPLocalStorage(
             apply()
         }
     }
+
 }

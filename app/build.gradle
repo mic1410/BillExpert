@@ -92,6 +92,7 @@ dependencies {
     //db
     def room_version = "2.2.0"
     implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "com.commonsware.cwac:saferoom.x:0.5.0"
 
