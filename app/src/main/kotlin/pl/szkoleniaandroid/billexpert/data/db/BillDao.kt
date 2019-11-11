@@ -36,6 +36,9 @@ interface BillDao {
 
     @Delete
     fun deleteBill(billDto: BillDto)
+
+    @Query("SELECT count(1) as value from bill where userId = :userId")
+    suspend fun getBillsCount(userId: String): Int
 }
 
 //wrapper class for sum in sql

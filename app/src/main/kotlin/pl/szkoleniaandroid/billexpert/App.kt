@@ -25,10 +25,12 @@ import pl.szkoleniaandroid.billexpert.api.BillApi
 import pl.szkoleniaandroid.billexpert.api.REST_API_KEY
 import pl.szkoleniaandroid.billexpert.api.REST_APP_ID
 import pl.szkoleniaandroid.billexpert.data.db.BillDatabase
+import pl.szkoleniaandroid.billexpert.data.db.BillRoomRepository
 import pl.szkoleniaandroid.billexpert.data.db.LOCAL_DATE_TIME_FORMATTER
 import pl.szkoleniaandroid.billexpert.data.repositories.ApiRemoteRepository
 import pl.szkoleniaandroid.billexpert.data.repositories.SPLocalStorage
 import pl.szkoleniaandroid.billexpert.domain.model.LoggedUser
+import pl.szkoleniaandroid.billexpert.domain.repositories.BillRepository
 import pl.szkoleniaandroid.billexpert.domain.repositories.LocalRepository
 import pl.szkoleniaandroid.billexpert.domain.repositories.RemoteRepository
 import pl.szkoleniaandroid.billexpert.domain.usecase.SignInUseCase
@@ -155,8 +157,14 @@ val appModule = module {
     viewModel {
         BillsListViewModel(
                 billApi = get(),
-                billDao = get(),
-                localRepository = get()
+                localRepository = get(),
+                billRepository = get(),
+                billDao = get()
         )
     }
+
+    single<BillRepository> {
+        BillRoomRepository(billDao = get())
+    }
+
 }
