@@ -28,7 +28,7 @@ interface BillApi {
     suspend fun postBill(@Body bill: Bill): PostBillResponse
 
     @GET("classes/Bill")
-    suspend fun getBillsForUser(@Query("where") where: String, @Query("limit") limit: Int): BillsResponse
+    suspend fun getBillsForUser(@Query("where") where: String, @Query("limit") limit: Int, @Query("skip") skip: Int, @Query("order") order: String): BillsResponse
 
     @PUT("classes/Bill/{id}")
     suspend fun putBill(@Body bill: Bill, @Path("id") objectId: String): PutBillResponse

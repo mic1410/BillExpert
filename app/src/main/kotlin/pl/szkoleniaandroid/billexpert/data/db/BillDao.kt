@@ -19,7 +19,7 @@ interface BillDao {
     fun insert(billDto: BillDto)
 
     @Query("SELECT * from bill where userId = :userId ORDER BY updatedAt DESC")
-    fun getAllForUser(userId: String): LiveData<List<BillDto>>
+    fun getAllForUser(userId: String): DataSource.Factory<Int, BillDto>
 
     @Query("SELECT sum(amount) as value from bill where userId = :userId")
     fun getTotalAmountForUser(userId: String): LiveData<Amount>
