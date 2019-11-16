@@ -10,3 +10,7 @@ Demonstrates implementation of:
 * Data Binding (two-way data binding)
 * ViewModel
 * Retrofit
+
+![Alt text](screenshots/1.jpg?raw=true "Login screen")
+![Alt text](screenshots/2.jpg?raw=true "Login screen loading")
+![Alt text](screenshots/3.jpg?raw=true "Items screen")
